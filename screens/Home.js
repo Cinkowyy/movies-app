@@ -1,11 +1,15 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import Logo from "../img/Logo.png";
+import SearchInput from "../components/SearchInput";
 
 export default function Home() {
   return (
     <View style={styles.screenContainer}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.text}>Home screen!</Text>
-      </ScrollView>
+      <View style={styles.header}>
+        <Image source={Logo} style={styles.logoImage} />
+        <SearchInput />
+        <Text style={styles.title}>Popularne dzisiaj</Text>
+      </View>
     </View>
   );
 }
@@ -13,11 +17,27 @@ export default function Home() {
 const styles = StyleSheet.create({
   screenContainer: {
     height: "100%",
+    width: "100%",
     alignItems: "center",
-    justifyContent: "center",
   },
-  text: {
-    fontSize: 48,
-    color: "#FFF",
+  header: {
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: "rgba(34, 34, 34, 0.9)",
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+  },
+
+  logoImage: {
+    width: "50%",
+  },
+
+  title: {
+    color: "rgba(255,255,255,0.87)",
+    fontSize: 20,
+    fontWeight: "500",
+    alignSelf: "flex-start",
+    marginLeft: 8,
   },
 });

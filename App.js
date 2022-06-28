@@ -5,6 +5,7 @@ import {
   StatusBar,
   ImageBackground,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 
 const backgroundImage = require("./img/background.png");
@@ -26,7 +27,8 @@ const styles = StyleSheet.create({
   },
 
   imageBackground: {
-    width: "100%",
-    height: "100%",
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+    resizeMode: "stretch",
   },
 });
