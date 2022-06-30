@@ -1,21 +1,19 @@
 import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
 
-export default function SearchInput() {
+export default function MovieCard(props) {
   return (
     <View style={styles.cardContainer}>
       <TouchableOpacity style={styles.imageContainer}>
         <Image
           style={styles.image}
           source={{
-            uri: "https://image.tmdb.org/t/p/w500/zGLHX92Gk96O1DJvLil7ObJTbaL.jpg",
+            uri: `https://image.tmdb.org/t/p/w500${props.backdrop_path}`,
           }}
         />
       </TouchableOpacity>
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>
-          Fantastyczne zwierzęta: Tajemnice Dumbledore'a
-        </Text>
-        <Text style={styles.year}>2022</Text>
+        <Text style={styles.title}>{props.title}</Text>
+        <Text style={styles.year}>{props.release_date.slice(0, 4)}</Text>
       </View>
     </View>
   );

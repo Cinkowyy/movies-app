@@ -13,19 +13,37 @@ import menuIcon from "../img/menu-icon.png";
 import SearchInput from "../components/SearchInput";
 import MovieCard from "../components/MovieCard";
 import { API_KEY } from "../config";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Home() {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [fetchUrl, setFetchUrl] = useState(
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pl-PL&sort_by=popularity.desc&include_adult=true&page=1`
+  );
 
-  const handleSetSearchTerm = useCallback((term) => {
-    setSearchTerm(term);
-  }, []);
+  const [fetchedMovies, setFetchedMovies] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = () => {
-    setSearchTerm("");
-    Keyboard.dismiss();
+  const handleSetSearchedTerm = (term) => {
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pl-PL&query=${encodeURIComponent(
+      term
+    )}&page=1&include_adult=false`;
+    setFetchUrl(url);
   };
+
+  const fetchMovies = async () => {
+    const fetchedResults = await fetch(fetchUrl);
+    const jsonResults = await fetchedResults.json();
+    setFetchedMovies(jsonResults.results);
+  };
+
+  useEffect(() => {
+    fetchMovies().catch((e) => {
+      setErrorMessage("Coś poszło nie tak");
+      setFetchedMovies([]);
+      console.log(e.message);
+    });
+  }, [fetchUrl]);
+
   return (
     <TouchableWithoutFeedback
       style={{ flex: 1 }}
@@ -40,11 +58,7 @@ export default function Home() {
               <Image source={menuIcon} style={{ height: "100%" }} />
             </TouchableOpacity>
           </View>
-          <SearchInput
-            searchTerm={searchTerm}
-            setSearchTerm={handleSetSearchTerm}
-            submit={handleSubmit}
-          />
+          <SearchInput setSearchedTerm={handleSetSearchedTerm} />
           <Text style={styles.title}>Popularne dzisiaj</Text>
         </View>
         <ScrollView
@@ -52,11 +66,15 @@ export default function Home() {
           style={{ width: "100%" }}
         >
           <View style={styles.moviesContainer}>
-            <MovieCard />
-            <MovieCard />
-            <MovieCard />
-            <MovieCard />
-            <MovieCard />
+            {errorMessage ? (
+              <Text style={styles.errMessage}>{errorMessage}</Text>
+            ) : null}
+            {!fetchedMovies.length && !errorMessage ? (
+              <Text style={styles.errMessage}>Brak wyników</Text>
+            ) : null}
+            {fetchedMovies.map((movie) => {
+              return <MovieCard key={movie.id} {...movie} />;
+            })}
           </View>
         </ScrollView>
       </View>
@@ -70,6 +88,7 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
   },
+
   header: {
     display: "flex",
     alignItems: "center",
@@ -103,9 +122,17 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginLeft: 8,
   },
+
   moviesContainer: {
     width: "100%",
     display: "flex",
     alignItems: "center",
+    paddingBottom: 24,
+  },
+
+  errMessage: {
+    color: "rgba(255,200,100,.87)",
+    fontSize: 24,
+    marginTop: 24,
   },
 });

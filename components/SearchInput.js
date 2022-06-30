@@ -1,5 +1,6 @@
 import {
   Image,
+  Keyboard,
   StyleSheet,
   TextInput,
   TouchableOpacity,
@@ -9,8 +10,9 @@ import searchIconGrey from "../img/search-icon-grey.png";
 import searchIcon from "../img/search-icon.png";
 import { useMemo, useState } from "react";
 
-export default function SearchInput({ searchTerm, setSearchTerm, submit }) {
+export default function SearchInput({ setSearchedTerm }) {
   const [isFocused, setIsFocused] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const styles = useMemo(() => {
     return StyleSheet.create({
@@ -35,6 +37,12 @@ export default function SearchInput({ searchTerm, setSearchTerm, submit }) {
     });
   }, [isFocused]);
 
+  const submit = (submittedTerm) => {
+    setSearchedTerm(submittedTerm);
+    setSearchTerm("");
+    Keyboard.dismiss();
+  };
+
   return (
     <View style={styles.inputWrapper}>
       <TextInput
@@ -46,9 +54,9 @@ export default function SearchInput({ searchTerm, setSearchTerm, submit }) {
         value={searchTerm}
         onChangeText={(newTerm) => setSearchTerm(newTerm)}
         blurOnSubmit={true}
-        onSubmitEditing={submit}
+        onSubmitEditing={() => submit(searchTerm)}
       />
-      <TouchableOpacity onPress={submit}>
+      <TouchableOpacity onPress={() => submit(searchTerm)}>
         <Image source={isFocused ? searchIcon : searchIconGrey} />
       </TouchableOpacity>
     </View>
