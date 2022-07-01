@@ -1,34 +1,17 @@
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Home from "./screens/Home";
-import {
-  SafeAreaView,
-  Platform,
-  StatusBar,
-  ImageBackground,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import Movie from "./screens/Movie";
 
-const backgroundImage = require("./img/background.png");
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ImageBackground source={backgroundImage} style={styles.imageBackground}>
-        <Home />
-      </ImageBackground>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Movie" component={Movie} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    backgroundColor: "#222222",
-  },
-
-  imageBackground: {
-    width: Dimensions.get("window").width,
-    height: Dimensions.get("window").height,
-    resizeMode: "stretch",
-  },
-});

@@ -1,8 +1,12 @@
 import {
   Dimensions,
   Image,
+  ImageBackground,
   Keyboard,
+  Platform,
+  SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,6 +19,7 @@ import SearchInput from "../components/SearchInput";
 import MovieCard from "../components/MovieCard";
 import { API_KEY } from "../config";
 import { useCallback, useEffect, useRef, useState } from "react";
+import backgroundImage from "../img/background.png";
 
 export default function Home() {
   const [fetchUrl, setFetchUrl] = useState(
@@ -56,50 +61,68 @@ export default function Home() {
   }, [fetchUrl]);
 
   return (
-    <TouchableWithoutFeedback
-      style={{ flex: 1 }}
-      onPress={Keyboard.dismiss}
-      accessible={false}
-    >
-      <View style={styles.screenContainer}>
-        {isLoading ? (
-          <View style={styles.loaderContainer}>
-            <Text style={{ color: "#FFF", fontSize: 24 }}>Ładowanie...</Text>
-          </View>
-        ) : null}
-        <View style={styles.header}>
-          <View style={styles.topBar}>
-            <Image source={Logo} style={styles.logoImage} />
-            <TouchableOpacity style={styles.menuIcon}>
-              <Image source={menuIcon} style={{ height: "100%" }} />
-            </TouchableOpacity>
-          </View>
-          <SearchInput setSearchedTerm={handleSetSearchedTerm} />
-          <Text style={styles.title}>{headerText}</Text>
-        </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={{ width: "100%", position: "relative" }}
-          ref={scrollView}
+    <SafeAreaView style={styles.safeArea}>
+      <TouchableWithoutFeedback
+        style={{ flex: 1 }}
+        onPress={Keyboard.dismiss}
+        accessible={false}
+      >
+        <ImageBackground
+          source={backgroundImage}
+          style={styles.imageBackground}
         >
-          <View style={styles.moviesContainer}>
-            {errorMessage ? (
-              <Text style={styles.errMessage}>{errorMessage}</Text>
+          <View style={styles.screenContainer}>
+            {isLoading ? (
+              <View style={styles.loaderContainer}>
+                <Text style={{ color: "#FFF", fontSize: 24 }}>
+                  Ładowanie...
+                </Text>
+              </View>
             ) : null}
-            {!fetchedMovies.length && !errorMessage ? (
-              <Text style={styles.errMessage}>Brak wyników</Text>
-            ) : null}
-            {fetchedMovies.map((movie) => {
-              return <MovieCard key={movie.id} {...movie} />;
-            })}
+            <View style={styles.header}>
+              <View style={styles.topBar}>
+                <Image source={Logo} style={styles.logoImage} />
+                <TouchableOpacity style={styles.menuIcon}>
+                  <Image source={menuIcon} style={{ height: "100%" }} />
+                </TouchableOpacity>
+              </View>
+              <SearchInput setSearchedTerm={handleSetSearchedTerm} />
+              <Text style={styles.title}>{headerText}</Text>
+            </View>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ width: "100%", position: "relative" }}
+              ref={scrollView}
+            >
+              <View style={styles.moviesContainer}>
+                {errorMessage ? (
+                  <Text style={styles.errMessage}>{errorMessage}</Text>
+                ) : null}
+                {!fetchedMovies.length && !errorMessage ? (
+                  <Text style={styles.errMessage}>Brak wyników</Text>
+                ) : null}
+                {fetchedMovies.map((movie) => {
+                  return <MovieCard key={movie.id} {...movie} />;
+                })}
+              </View>
+            </ScrollView>
           </View>
-        </ScrollView>
-      </View>
-    </TouchableWithoutFeedback>
+        </ImageBackground>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    backgroundColor: "#222222",
+  },
+  imageBackground: {
+    width: Dimensions.get("window").width,
+    height: Dimensions.get("window").height,
+    resizeMode: "stretch",
+  },
   screenContainer: {
     height: "100%",
     width: "100%",
