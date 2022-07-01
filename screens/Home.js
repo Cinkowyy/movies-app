@@ -21,7 +21,7 @@ import { API_KEY } from "../config";
 import { useCallback, useEffect, useRef, useState } from "react";
 import backgroundImage from "../img/background.png";
 
-export default function Home() {
+export default function Home({ navigation }) {
   const [fetchUrl, setFetchUrl] = useState(
     `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pl-PL&sort_by=popularity.desc&include_adult=true&page=1`
   );
@@ -102,7 +102,13 @@ export default function Home() {
                   <Text style={styles.errMessage}>Brak wyników</Text>
                 ) : null}
                 {fetchedMovies.map((movie) => {
-                  return <MovieCard key={movie.id} {...movie} />;
+                  return (
+                    <MovieCard
+                      key={movie.id}
+                      {...movie}
+                      navigation={navigation}
+                    />
+                  );
                 })}
               </View>
             </ScrollView>
@@ -151,8 +157,9 @@ const styles = StyleSheet.create({
 
   menuIcon: {
     position: "absolute",
-    right: -12,
+    right: -20,
     height: 32,
+    width: 32,
   },
 
   title: {

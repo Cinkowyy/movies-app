@@ -4,7 +4,10 @@ import placeholderImage from "../img/placeholder-image.png";
 export default function MovieCard(props) {
   return (
     <View style={styles.cardContainer}>
-      <TouchableOpacity style={styles.imageContainer}>
+      <TouchableOpacity
+        style={styles.imageContainer}
+        onPress={() => props.navigation.push("Movie", { ...props })}
+      >
         <Image
           style={styles.image}
           source={
