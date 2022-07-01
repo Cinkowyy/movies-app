@@ -1,4 +1,5 @@
 import {
+  Dimensions,
   Image,
   Keyboard,
   ScrollView,
@@ -13,7 +14,7 @@ import menuIcon from "../img/menu-icon.png";
 import SearchInput from "../components/SearchInput";
 import MovieCard from "../components/MovieCard";
 import { API_KEY } from "../config";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const [fetchUrl, setFetchUrl] = useState(
@@ -22,24 +23,34 @@ export default function Home() {
 
   const [fetchedMovies, setFetchedMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const [headerText, setHeaderText] = useState("Popularne dzisiaj");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const scrollView = useRef(null);
 
   const handleSetSearchedTerm = (term) => {
     const url = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&language=pl-PL&query=${encodeURIComponent(
       term
     )}&page=1&include_adult=false`;
+    setHeaderText(term);
     setFetchUrl(url);
   };
 
   const fetchMovies = async () => {
+    setIsLoading(true);
     const fetchedResults = await fetch(fetchUrl);
     const jsonResults = await fetchedResults.json();
+    scrollView.current.scrollTo({ x: 0, y: 0, animated: false });
     setFetchedMovies(jsonResults.results);
+    setErrorMessage("");
+    setIsLoading(false);
   };
 
   useEffect(() => {
     fetchMovies().catch((e) => {
-      setErrorMessage("Coś poszło nie tak");
       setFetchedMovies([]);
+      setErrorMessage("Coś poszło nie tak");
+      setIsLoading(false);
       console.log(e.message);
     });
   }, [fetchUrl]);
@@ -51,6 +62,11 @@ export default function Home() {
       accessible={false}
     >
       <View style={styles.screenContainer}>
+        {isLoading ? (
+          <View style={styles.loaderContainer}>
+            <Text style={{ color: "#FFF", fontSize: 24 }}>Ładowanie...</Text>
+          </View>
+        ) : null}
         <View style={styles.header}>
           <View style={styles.topBar}>
             <Image source={Logo} style={styles.logoImage} />
@@ -59,11 +75,12 @@ export default function Home() {
             </TouchableOpacity>
           </View>
           <SearchInput setSearchedTerm={handleSetSearchedTerm} />
-          <Text style={styles.title}>Popularne dzisiaj</Text>
+          <Text style={styles.title}>{headerText}</Text>
         </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          style={{ width: "100%" }}
+          style={{ width: "100%", position: "relative" }}
+          ref={scrollView}
         >
           <View style={styles.moviesContainer}>
             {errorMessage ? (
@@ -93,7 +110,7 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     width: "100%",
-    backgroundColor: "rgba(34, 34, 34, 0.9)",
+    backgroundColor: "rgba(34, 34, 34, 0.95)",
     paddingTop: 24,
     paddingBottom: 16,
     paddingHorizontal: 16,
@@ -128,6 +145,16 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     paddingBottom: 24,
+  },
+
+  loaderContainer: {
+    position: "absolute",
+    width: "100%",
+    height: Dimensions.get("window").height,
+    backgroundColor: "rgba(54,54,54,0.9)",
+    zIndex: 2,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   errMessage: {

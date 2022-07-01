@@ -1,4 +1,5 @@
 import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import placeholderImage from "../img/placeholder-image.png";
 
 export default function MovieCard(props) {
   return (
@@ -6,9 +7,13 @@ export default function MovieCard(props) {
       <TouchableOpacity style={styles.imageContainer}>
         <Image
           style={styles.image}
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500${props.backdrop_path}`,
-          }}
+          source={
+            props.backdrop_path == null
+              ? placeholderImage
+              : {
+                  uri: `https://image.tmdb.org/t/p/w500${props.backdrop_path}`,
+                }
+          }
         />
       </TouchableOpacity>
       <View style={styles.detailsContainer}>
@@ -31,6 +36,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 250,
+    maxWidth: "100%",
     borderRadius: 8,
     marginBottom: 8,
   },
