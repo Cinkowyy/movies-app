@@ -15,17 +15,21 @@ import {
 } from "react-native";
 import Logo from "../img/Logo.png";
 import menuIcon from "../img/menu-icon.png";
-import SearchInput from "../components/SearchInput";
-import MovieCard from "../components/MovieCard";
+import SearchInput from "../components/HomeScreen/SearchInput";
+import MovieCard from "../components/HomeScreen/MovieCard";
 import { API_KEY } from "../config";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import backgroundImage from "../img/background.png";
+import Loader from "../components/Loader";
+import TopBar from "../components/HomeScreen/TopBar";
+import MoviesContainer from "../components/HomeScreen/MoviesContainer";
 
 export default function Home({ navigation }) {
   const [fetchUrl, setFetchUrl] = useState(
     `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pl-PL&sort_by=popularity.desc&include_adult=true&page=1`
   );
 
+  const [genres, setGenres] = useState([]);
   const [fetchedMovies, setFetchedMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [headerText, setHeaderText] = useState("Popularne dzisiaj");
@@ -51,6 +55,16 @@ export default function Home({ navigation }) {
     setIsLoading(false);
   };
 
+  const fetchGenres = async () => {
+    setIsLoading(true);
+    const fetchedGenres = await fetch(
+      `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=pl-PL`
+    );
+    const jsonResults = await fetchedGenres.json();
+    setGenres(jsonResults);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
     fetchMovies().catch((e) => {
       setFetchedMovies([]);
@@ -59,6 +73,14 @@ export default function Home({ navigation }) {
       console.log(e.message);
     });
   }, [fetchUrl]);
+
+  useEffect(() => {
+    fetchGenres().catch((e) => {
+      setErrorMessage("Coś poszło nie tak");
+      setIsLoading(false);
+      console.log(e.message);
+    });
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -72,20 +94,9 @@ export default function Home({ navigation }) {
           style={styles.imageBackground}
         >
           <View style={styles.screenContainer}>
-            {isLoading ? (
-              <View style={styles.loaderContainer}>
-                <Text style={{ color: "#FFF", fontSize: 24 }}>
-                  Ładowanie...
-                </Text>
-              </View>
-            ) : null}
+            {isLoading ? <Loader /> : null}
             <View style={styles.header}>
-              <View style={styles.topBar}>
-                <Image source={Logo} style={styles.logoImage} />
-                <TouchableOpacity style={styles.menuIcon}>
-                  <Image source={menuIcon} style={{ height: "100%" }} />
-                </TouchableOpacity>
-              </View>
+              <TopBar navigation={navigation} />
               <SearchInput setSearchedTerm={handleSetSearchedTerm} />
               <Text style={styles.title}>{headerText}</Text>
             </View>
@@ -94,23 +105,12 @@ export default function Home({ navigation }) {
               style={{ width: "100%", position: "relative" }}
               ref={scrollView}
             >
-              <View style={styles.moviesContainer}>
-                {errorMessage ? (
-                  <Text style={styles.errMessage}>{errorMessage}</Text>
-                ) : null}
-                {!fetchedMovies.length && !errorMessage ? (
-                  <Text style={styles.errMessage}>Brak wyników</Text>
-                ) : null}
-                {fetchedMovies.map((movie) => {
-                  return (
-                    <MovieCard
-                      key={movie.id}
-                      {...movie}
-                      navigation={navigation}
-                    />
-                  );
-                })}
-              </View>
+              <MoviesContainer
+                navigation={navigation}
+                fetchedMovies={fetchedMovies}
+                genres={genres}
+                errorMessage={errorMessage}
+              />
             </ScrollView>
           </View>
         </ImageBackground>
@@ -146,50 +146,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  topBar: {
-    width: "90%",
-    position: "relative",
-  },
-
-  logoImage: {
-    alignSelf: "center",
-  },
-
-  menuIcon: {
-    position: "absolute",
-    right: -20,
-    height: 32,
-    width: 32,
-  },
-
   title: {
     color: "rgba(255,255,255,0.87)",
     fontSize: 20,
     fontWeight: "500",
     alignSelf: "flex-start",
     marginLeft: 8,
-  },
-
-  moviesContainer: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    paddingBottom: 24,
-  },
-
-  loaderContainer: {
-    position: "absolute",
-    width: "100%",
-    height: Dimensions.get("window").height,
-    backgroundColor: "rgba(54,54,54,0.9)",
-    zIndex: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  errMessage: {
-    color: "rgba(255,200,100,.87)",
-    fontSize: 24,
-    marginTop: 24,
   },
 });

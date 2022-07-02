@@ -1,5 +1,5 @@
 import { Image, Text, TouchableOpacity, View, StyleSheet } from "react-native";
-import placeholderImage from "../img/placeholder-image.png";
+import placeholderImage from "../../img/placeholder-image.png";
 
 export default function MovieCard(props) {
   return (

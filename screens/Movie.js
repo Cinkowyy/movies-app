@@ -4,17 +4,34 @@ import {
   Platform,
   SafeAreaView,
   StatusBar,
-  Text,
   View,
   StyleSheet,
   TouchableOpacity,
   Image,
+  LogBox,
 } from "react-native";
 import backgroundImage from "../img/background.png";
 import arrowLeft from "../img/arrow-left-icon.png";
-import placeholderImage from "../img/placeholder-image.png";
+import Details from "../components/MovieScreen/Details";
 
-export default function Movie({ navigation, route }) {
+LogBox.ignoreLogs([
+  "Non-serializable values were found in the navigation state",
+]);
+
+export default function Movie({
+  navigation,
+  route: {
+    params: {
+      id,
+      title,
+      backdrop_path,
+      release_date,
+      genre_ids,
+      genres,
+      overview,
+    },
+  },
+}) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ImageBackground source={backgroundImage} style={styles.imageBackground}>
@@ -25,24 +42,12 @@ export default function Movie({ navigation, route }) {
           >
             <Image style={{ height: 32, width: 32 }} source={arrowLeft} />
           </TouchableOpacity>
-          <ImageBackground
-            source={
-              route.params.backdrop_path == null
-                ? placeholderImage
-                : {
-                    uri: `https://image.tmdb.org/t/p/w500${route.params.backdrop_path}`,
-                  }
-            }
-            style={styles.imageContainer}
-          >
-            <Text style={styles.title}>{route.params.title}</Text>
-            <View style={styles.movieDetails}>
-              <Text style={styles.genres}>Gatunek1, Gatunek2</Text>
-              <Text style={styles.year}>
-                {route.params.release_date.slice(0, 4)}
-              </Text>
-            </View>
-          </ImageBackground>
+          <Details
+            title={title}
+            backdrop_path={backdrop_path}
+            release_year={release_date.slice(0, 4).toString()}
+            genres={["Akcja, Przygoda"]}
+          />
         </View>
       </ImageBackground>
     </SafeAreaView>
@@ -71,33 +76,5 @@ const styles = StyleSheet.create({
     top: 32,
     left: 16,
     zIndex: 2,
-  },
-
-  imageContainer: {
-    height: 250,
-    width: Dimensions.get("window").width,
-    padding: 16,
-    justifyContent: "flex-end",
-  },
-
-  movieDetails: {
-    flexDirection: "row",
-  },
-
-  title: {
-    color: "#FFF",
-    fontSize: 24,
-    fontWeight: "bold",
-  },
-  genres: {
-    fontSize: 16,
-    color: "rgba(255,255,255,0.87)",
-    marginRight: 10,
-    fontWeight: "500",
-  },
-
-  year: {
-    color: "#808080",
-    fontSize: 16,
   },
 });

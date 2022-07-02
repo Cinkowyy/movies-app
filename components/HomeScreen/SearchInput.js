@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import searchIconGrey from "../img/search-icon-grey.png";
-import searchIcon from "../img/search-icon.png";
+import searchIconGrey from "../../img/search-icon-grey.png";
+import searchIcon from "../../img/search-icon.png";
 import { useMemo, useState } from "react";
 
 export default function SearchInput({ setSearchedTerm }) {
