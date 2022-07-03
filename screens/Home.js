@@ -26,7 +26,7 @@ import MoviesContainer from "../components/HomeScreen/MoviesContainer";
 
 export default function Home({ navigation }) {
   const [fetchUrl, setFetchUrl] = useState(
-    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pl-PL&sort_by=popularity.desc&include_adult=true&page=1`
+    `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&language=pl-PL&sort_by=popularity.desc&include_adult=false&page=1`
   );
 
   const [genres, setGenres] = useState([]);
@@ -47,21 +47,19 @@ export default function Home({ navigation }) {
 
   const fetchMovies = async () => {
     setIsLoading(true);
-    const fetchedResults = await fetch(fetchUrl);
-    const jsonResults = await fetchedResults.json();
-    scrollView.current.scrollTo({ x: 0, y: 0, animated: false });
-    setFetchedMovies(jsonResults.results);
-    setErrorMessage("");
-    setIsLoading(false);
-  };
+    const fetchedMovies = await fetch(fetchUrl);
+    const jsonMovies = await fetchedMovies.json();
 
-  const fetchGenres = async () => {
-    setIsLoading(true);
-    const fetchedGenres = await fetch(
-      `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=pl-PL`
-    );
-    const jsonResults = await fetchedGenres.json();
-    setGenres(jsonResults);
+    if (genres.length === 0 || genres.success === false) {
+      const fetchedGenres = await fetch(
+        `https://api.themoviedb.org/3/genre/movie/list?api_key=${API_KEY}&language=pl-PL`
+      );
+      const jsonGenres = await fetchedGenres.json();
+      setGenres(jsonGenres);
+    }
+    scrollView.current.scrollTo({ x: 0, y: 0, animated: false });
+    setFetchedMovies(jsonMovies.results);
+    setErrorMessage("");
     setIsLoading(false);
   };
 
@@ -73,14 +71,6 @@ export default function Home({ navigation }) {
       console.log(e.message);
     });
   }, [fetchUrl]);
-
-  useEffect(() => {
-    fetchGenres().catch((e) => {
-      setErrorMessage("Coś poszło nie tak");
-      setIsLoading(false);
-      console.log(e.message);
-    });
-  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -141,7 +131,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "rgba(34, 34, 34, 0.95)",
     paddingTop: 24,
-    paddingBottom: 16,
+    paddingBottom: 12,
     paddingHorizontal: 16,
     marginBottom: 10,
   },
@@ -149,7 +139,7 @@ const styles = StyleSheet.create({
   title: {
     color: "rgba(255,255,255,0.87)",
     fontSize: 20,
-    fontWeight: "500",
+    fontFamily: "Poppins-Medium",
     alignSelf: "flex-start",
     marginLeft: 8,
   },

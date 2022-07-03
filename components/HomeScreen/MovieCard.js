@@ -54,9 +54,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginRight: 16,
     fontSize: 16,
+    fontFamily: "Poppins-Regular",
   },
   year: {
     color: "#808080",
     fontSize: 16,
+    fontFamily: "Poppins-Regular",
   },
 });

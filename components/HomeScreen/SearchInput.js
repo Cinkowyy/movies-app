@@ -33,11 +33,17 @@ export default function SearchInput({ setSearchedTerm }) {
       input: {
         color: "#FFF",
         fontSize: 16,
+        fontFamily: "Poppins-Light",
+        width: "80%",
       },
     });
   }, [isFocused]);
 
   const submit = (submittedTerm) => {
+    if (!submittedTerm) {
+      Keyboard.dismiss();
+      return;
+    }
     setSearchedTerm(submittedTerm);
     setSearchTerm("");
     Keyboard.dismiss();
