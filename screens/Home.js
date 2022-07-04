@@ -1,6 +1,5 @@
 import {
   Dimensions,
-  Image,
   ImageBackground,
   Keyboard,
   Platform,
@@ -9,14 +8,10 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native";
-import Logo from "../img/Logo.png";
-import menuIcon from "../img/menu-icon.png";
 import SearchInput from "../components/HomeScreen/SearchInput";
-import MovieCard from "../components/HomeScreen/MovieCard";
 import { API_KEY } from "../config";
 import { useEffect, useRef, useState } from "react";
 import backgroundImage from "../img/background.png";
@@ -58,6 +53,8 @@ export default function Home({ navigation }) {
       setGenres(jsonGenres);
     }
     scrollView.current.scrollTo({ x: 0, y: 0, animated: false });
+    if (jsonMovies.success === false)
+      throw new Error(jsonMovies.status_message);
     setFetchedMovies(jsonMovies.results);
     setErrorMessage("");
     setIsLoading(false);
